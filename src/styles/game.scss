@@ -1,0 +1,93 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#patuti {
+  height: 600px;
+  border: 1px solid black;
+  overflow: hidden;
+}
+
+#space {
+  width: 295px;
+  height: 400px;
+  margin: 80px auto;
+  position: relative;
+}
+
+#character {
+  background-size: cover;
+  // width: 150px;
+  // height: 161.5px;
+  position: absolute;
+  bottom: 145px;
+  z-index: 1;
+}
+
+.animate-jump {
+  animation: jump 2s;
+}
+
+#area {
+  height: 152.5px;
+  width: 295px;
+  background-image: url("../assets/area.png");
+  background-size: cover;
+  position: absolute;
+  bottom: 0;
+}
+
+.bullet-right-list {
+  list-style: none;
+  position: absolute;
+  right: -15px;
+  top: 125px;
+}
+
+.bullet-y {
+  position: relative;
+  width: 121.5px;
+  height: 59px;
+  background-color: yellow;
+  margin-bottom: 40px !important;
+}
+
+.bullet-y-1 {
+  animation: bullet-shoot 2s;
+  animation-delay: 1s;
+}
+
+.bullet-x {
+  height: 121.5px;
+  width: 59px;
+  background-color: yellow;
+}
+
+@keyframes bullet-shoot {
+  0% {
+    left: 0px;
+  }
+  100% {
+    left: -1000px;
+  }
+}
+
+@keyframes jump {
+  0% {
+    bottom: 145px;
+  }
+  57% {
+    bottom: 145px;
+  }
+  70% {
+    bottom: 200px;
+  }
+  80% {
+    bottom: 200px;
+  }
+  100% {
+    bottom: 145px;
+  }
+}
