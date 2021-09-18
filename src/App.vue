@@ -1,5 +1,5 @@
 <template>
-  <div id="app" tabindex="0" v-on:keydown="key">
+  <div id="app" tabindex="0" v-on:keydown="keyDown" @keyup="keyUp">
     <div id="patuti">
       <div id="space">
         <div
@@ -48,6 +48,7 @@ export default {
         speedIdle: 200,
         speedJump: 200,
         speedJump2: 400,
+        speedDock: 100,
       },
       walkPixels: 10,
       currentAction: 0,
@@ -111,7 +112,33 @@ export default {
             width: 150,
           },
         ],
-        ["dock-1.png", "dock-2.png", "dock-3.png", "dock-4.png", "dock-5.png"],
+        [
+          {
+            name: "dock-1.png",
+            width: 150,
+            height: 161.5,
+          },
+          {
+            name: "dock-2.png",
+            width: 150,
+            height: 149.5,
+          },
+          {
+            name: "dock-3.png",
+            width: 150,
+            height: 135,
+          },
+          {
+            name: "dock-4.png",
+            width: 136,
+            height: 94.5,
+          },
+          {
+            name: "dock-5.png",
+            width: 134,
+            height: 120,
+          },
+        ],
       ],
     };
   },
@@ -119,8 +146,11 @@ export default {
     idleAction() {
       this.currentAction = this.actionList.idle;
       this.actionIteration = 0;
-      this.height = this.defaultHeight;
-      this.width = this.defaultWidth;
+      // Added timeout to give time for the image to load
+      setTimeout(() => {
+        this.height = this.defaultHeight;
+        this.width = this.defaultWidth;
+      }, 200);
       this.jumped = false;
       this.speed = 200;
     },
@@ -173,44 +203,43 @@ export default {
             this.actionImagesList[this.currentAction].length - 1
           ) {
             this.actionIteration++;
-            // console.log(this.jumped + " - " + this.currentImage);
-            if (this.actionIteration > 3) {
-              this.speed = this.speedJump2;
-            }
-            console.log(this.speed);
           } else this.idleAction();
         }
 
         // DOCK
         else if (this.currentAction === this.actionList.dock) {
-          if (
-            this.actionIteration <
-            this.actionImagesList[this.currentAction].length - 1
-          ) {
+          if (this.docked) {
+            if (
+              this.actionIteration <
+              this.actionImagesList[this.currentAction].length - 1
+            ) {
+              if (this.actionIteration < 3) {
+                this.actionIteration++;
+              }
+            }
+          } else if (!this.docked && this.actionIteration == 3) {
             this.actionIteration++;
-          } else this.idleAction();
+          } else {
+            this.idleAction();
+          }
         }
 
         this.action();
       }, this.speed);
     },
-    key(event) {
+    keyDown(event) {
       let key = event.key;
-      // console.log(key);
       switch (key) {
         case "a":
         case "ArrowLeft":
-          console.log("left");
           if (this.characterLocation <= -40 || this.currentAction != 0) break;
           this.currentAction = 1;
           this.speed = this.speedList.speedWalk;
-          console.log(this.speed);
           // this.characterLocation -= 5;
           break;
 
         case "d":
         case "ArrowRight":
-          console.log("right");
           if (this.characterLocation >= 174 || this.currentAction != 0) break;
           this.speed = this.speedList.speedWalk;
           this.currentAction = 2;
@@ -219,29 +248,28 @@ export default {
 
         case "w":
         case "ArrowUp":
-          console.log("up");
           if (this.currentAction != 0) break;
           this.currentAction = 3;
           this.speed = this.speedList.speedJump;
           this.jumped = true;
-          // setTimeout(() => {
-          //   this.jumped = false;
-          // }, 1000);
           break;
 
         case "s":
         case "ArrowDown":
-          console.log("down");
-
           if (this.currentAction != 0) break;
           this.currentAction = 4;
+          this.docked = true;
+          this.speed = this.speedList.speedDock;
           break;
       }
     },
-  },
-  watch: {
-    currentAction(newVal) {
-      if (newVal == this.actionList.idle) this.jumped = false;
+    keyUp(event) {
+      switch (event.key) {
+        case "s":
+        case "ArrowDown":
+          this.docked = false;
+          break;
+      }
     },
   },
   created() {

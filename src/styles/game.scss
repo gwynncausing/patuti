@@ -5,7 +5,7 @@
 }
 
 #patuti {
-  height: 600px;
+  height: 100vh;
   border: 1px solid black;
   overflow: hidden;
 }
@@ -27,7 +27,7 @@
 }
 
 .animate-jump {
-  animation: jump 2s;
+  animation: jump 1.4s;
 }
 
 #area {
@@ -78,7 +78,7 @@
   0% {
     bottom: 145px;
   }
-  57% {
+  28% {
     bottom: 145px;
   }
   70% {
@@ -87,7 +87,7 @@
   80% {
     bottom: 200px;
   }
-  100% {
+  95% {
     bottom: 145px;
   }
 }
