@@ -49,22 +49,25 @@
 }
 
 li {
-  width: 121.5px;
-  height: 59px;
-  background-color: yellow;
-  margin-bottom: 28px !important;
+  width: 60.75px;
+  height: 29.5px;
+  background-image: url("../assets/bullet_h.png");
+  background-size: cover;
+  margin-bottom: 60px !important;
   position: relative;
 
   .bullet {
-    width: 121.5px;
-    height: 59px;
-    background-color: red;
+    width: 60.75px;
+    height: 29.5px;
+    background-image: url("../assets/bullet_h.png");
+    background-size: cover;
     position: absolute;
     right: 0px;
 
     &.active {
       animation-name: shoot;
-      animation-duration: 5s;
+      animation-duration: 8s;
+      animation-timing-function: ease;
     }
   }
 }

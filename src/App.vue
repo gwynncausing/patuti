@@ -25,14 +25,22 @@
 
       <ul class="bullet-right-list">
         <li class="bullet-y">
-          <div class="bullet"></div>
-        </li>
-        <li class="bullet-y">
-          <div class="bullet"></div>
+          <div
+            ref="bullet3"
+            class="bullet"
+            :class="{ active: bullets.bullet3.isShoot }"
+          ></div>
         </li>
         <li class="bullet-y">
           <div
-            ref="bullet"
+            ref="bullet2"
+            class="bullet"
+            :class="{ active: bullets.bullet2.isShoot }"
+          ></div>
+        </li>
+        <li class="bullet-y">
+          <div
+            ref="bullet1"
             class="bullet"
             :class="{ active: bullets.bullet1.isShoot }"
           ></div>
@@ -155,33 +163,83 @@ export default {
         ],
       ],
       bullets: {
-        bulletNumber: "bullet1",
         bullet1: {
           isShoot: true,
-          delay: Math.floor(Math.random() * 10),
+          delay: Math.floor(Math.random() * 20),
           x: 0,
           y: 0,
-          height: 59,
-          width: 121,
+          height: 29.5,
+          width: 60.75,
+          finished: false,
+        },
+        bullet2: {
+          isShoot: false,
+          delay: Math.floor(Math.random() * 20),
+          x: 0,
+          y: 0,
+          height: 29.5,
+          width: 60.75,
+          finished: true,
+        },
+        bullet3: {
+          isShoot: false,
+          delay: Math.floor(Math.random() * 20),
+          x: 0,
+          y: 0,
+          height: 29.5,
+          width: 60.75,
+          finished: true,
         },
       },
     };
   },
   methods: {
-    bulletShoot() {
+    timeOut200() {
       setInterval(() => {
-        // if (!this.bullets.bullet1.reachedDestination) {
-        //   this.bullets.bullet1.isShoot = !this.bullets.bullet1.isShoot;
-        //   this.bullets.bullet1.reachedDestination = true;
-        // }
-        if (!this.bullets.bullet1.isShoot || this.bullets.bullet1.x < 20) {
-          this.bullets.bullet1.isShoot = !this.bullets.bullet1.isShoot;
+        if (this.bullets.bullet1.x < 20) {
+          this.bullets.bullet1.isShoot = false;
         }
-        // console.log(this.$refs.bullet.getBoundingClientRect().left);
-        // console.log(this.bullets.bullet1.x);
-        // console.log(this.$refs.bullet);
+        if (this.bullets.bullet2.x < 20) {
+          this.bullets.bullet2.isShoot = false;
+        }
+        if (this.bullets.bullet3.x < 20) {
+          this.bullets.bullet3.isShoot = false;
+        }
       }, 200);
     },
+    getRandomNumber() {
+      return Math.floor(Math.random() * 20 + 1);
+    },
+
+    bullet1Shoot() {
+      setTimeout(() => {
+        if (!this.bullets.bullet1.isShoot) {
+          this.bullets.bullet1.isShoot = true;
+          this.bullets.bullet1.delay = this.getRandomNumber();
+        }
+        this.bullet1Shoot();
+      }, this.bullets.bullet1.delay * 1000);
+    },
+    bullet2Shoot() {
+      setTimeout(() => {
+        if (!this.bullets.bullet2.isShoot) {
+          this.bullets.bullet2.isShoot = true;
+          this.bullets.bullet2.delay = this.getRandomNumber();
+        }
+        this.bullet2Shoot();
+      }, this.bullets.bullet2.delay * 1000);
+    },
+    bullet3Shoot() {
+      setTimeout(() => {
+        console.log("bullet3 called");
+        if (!this.bullets.bullet3.isShoot) {
+          this.bullets.bullet3.isShoot = true;
+          this.bullets.bullet3.delay = this.getRandomNumber();
+        }
+        this.bullet3Shoot();
+      }, this.bullets.bullet3.delay * 1000);
+    },
+
     idleAction() {
       this.currentAction = this.actionList.idle;
       this.actionIteration = 0;
@@ -274,18 +332,51 @@ export default {
           y: this.$refs.character.getBoundingClientRect().top,
         };
 
-        this.bullets.bullet1.x = this.$refs.bullet.getBoundingClientRect().left;
-        this.bullets.bullet1.y = this.$refs.bullet.getBoundingClientRect().top;
+        this.bullets.bullet1.x =
+          this.$refs.bullet1.getBoundingClientRect().left;
+        this.bullets.bullet1.y = this.$refs.bullet1.getBoundingClientRect().top;
 
-        let bullet = this.bullets.bullet1;
-        if (
-          character.x < bullet.x + bullet.width &&
-          character.x + character.width > bullet.x &&
-          character.y < bullet.y + bullet.height &&
-          character.y + character.height > bullet.y
-        ) {
-          // this.bullets.bullet1.isShoot = !this.bullets.bullet1.isShoot;
-          console.log("game over");
+        this.bullets.bullet2.x =
+          this.$refs.bullet2.getBoundingClientRect().left;
+        this.bullets.bullet2.y = this.$refs.bullet2.getBoundingClientRect().top;
+
+        this.bullets.bullet3.x =
+          this.$refs.bullet3.getBoundingClientRect().left;
+        this.bullets.bullet3.y = this.$refs.bullet3.getBoundingClientRect().top;
+
+        let bullet1 = this.bullets.bullet1;
+        let bullet1Hit =
+          character.x < bullet1.x + bullet1.width &&
+          character.x + character.width > bullet1.x &&
+          character.y < bullet1.y + bullet1.height &&
+          character.y + character.height > bullet1.y;
+
+        let bullet2 = this.bullets.bullet2;
+        let bullet2Hit =
+          character.x < bullet2.x + bullet2.width &&
+          character.x + character.width > bullet2.x &&
+          character.y < bullet2.y + bullet2.height &&
+          character.y + character.height > bullet2.y;
+
+        let bullet3 = this.bullets.bullet3;
+        let bullet3Hit =
+          character.x < bullet3.x + bullet3.width &&
+          character.x + character.width > bullet3.x &&
+          character.y < bullet3.y + bullet3.height &&
+          character.y + character.height > bullet3.y;
+
+        if (bullet1Hit) {
+          this.bullets.bullet1.isShoot = !this.bullets.bullet1.isShoot;
+          console.log("bullet1 game over");
+        }
+        if (bullet2Hit) {
+          this.bullets.bullet2.isShoot = !this.bullets.bullet2.isShoot;
+          console.log("bullet2 game over");
+        }
+
+        if (bullet3Hit) {
+          this.bullets.bullet3.isShoot = !this.bullets.bullet3.isShoot;
+          console.log("bullet3 game over");
         }
 
         this.action();
@@ -344,7 +435,10 @@ export default {
   },
   created() {
     this.action();
-    this.bulletShoot();
+    this.bullet1Shoot();
+    this.bullet2Shoot();
+    this.bullet3Shoot();
+    this.timeOut200();
   },
 };
 </script>
