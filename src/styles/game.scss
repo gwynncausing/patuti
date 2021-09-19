@@ -8,6 +8,7 @@
   height: 100vh;
   border: 1px solid black;
   overflow: hidden;
+  position: relative;
 }
 
 #space {
@@ -42,21 +43,30 @@
 .bullet-right-list {
   list-style: none;
   position: absolute;
-  right: -15px;
-  top: 125px;
+  right: 0px;
+  top: 90px;
+  margin-right: -15px;
 }
 
-.bullet-y {
-  position: relative;
+li {
   width: 121.5px;
   height: 59px;
   background-color: yellow;
-  margin-bottom: 40px !important;
-}
+  margin-bottom: 28px !important;
+  position: relative;
 
-.bullet-y-1 {
-  animation: bullet-shoot 2s;
-  animation-delay: 1s;
+  .bullet {
+    width: 121.5px;
+    height: 59px;
+    background-color: red;
+    position: absolute;
+    right: 0px;
+
+    &.active {
+      animation-name: shoot;
+      animation-duration: 5s;
+    }
+  }
 }
 
 .bullet-x {
@@ -65,12 +75,12 @@
   background-color: yellow;
 }
 
-@keyframes bullet-shoot {
+@keyframes shoot {
   0% {
-    left: 0px;
+    right: 0px;
   }
   100% {
-    left: -1000px;
+    right: 100vw;
   }
 }
 
@@ -78,14 +88,14 @@
   0% {
     bottom: 145px;
   }
-  28% {
+  5% {
     bottom: 145px;
   }
   70% {
-    bottom: 200px;
+    bottom: 250px;
   }
   80% {
-    bottom: 200px;
+    bottom: 250px;
   }
   95% {
     bottom: 145px;

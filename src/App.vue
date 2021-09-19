@@ -1,8 +1,15 @@
 <template>
-  <div id="app" tabindex="0" v-on:keydown="keyDown" @keyup="keyUp">
+  <div
+    id="app"
+    tabindex="0"
+    v-on:keydown="keyDown"
+    @keyup="keyUp"
+    @mousemove="mousemove"
+  >
     <div id="patuti">
       <div id="space">
         <div
+          ref="character"
           id="character"
           :style="{
             left: characterLocation + 'px',
@@ -16,12 +23,21 @@
         <div id="area"></div>
       </div>
 
-      <!-- <ul class="bullet-right-list">
-        <li class="bullet-y bullet-y-1"></li>
-        <li class="bullet-y"></li>
-        <li class="bullet-y"></li>
-      </ul> -->
-
+      <ul class="bullet-right-list">
+        <li class="bullet-y">
+          <div class="bullet"></div>
+        </li>
+        <li class="bullet-y">
+          <div class="bullet"></div>
+        </li>
+        <li class="bullet-y">
+          <div
+            ref="bullet"
+            class="bullet"
+            :class="{ active: bullets.bullet1.isShoot }"
+          ></div>
+        </li>
+      </ul>
       <!-- <div class="bullet-y"></div> -->
       <!-- <div class="bullet-x"></div> -->
     </div>
@@ -34,6 +50,8 @@ export default {
   name: "App",
   data() {
     return {
+      mousePositionX: 0,
+      mousePositionY: 0,
       defaultHeight: 161.5,
       defaultWidth: 150,
       height: 161.5,
@@ -44,11 +62,12 @@ export default {
       docked: false,
       speed: 200,
       speedList: {
-        speedWalk: 100,
+        speedWalk: 30,
         speedIdle: 200,
-        speedJump: 200,
+        speedJump: 50,
         speedJump2: 400,
-        speedDock: 100,
+        speedJump3: 600,
+        speedDock: 50,
       },
       walkPixels: 10,
       currentAction: 0,
@@ -59,11 +78,6 @@ export default {
         jump: 3,
         dock: 4,
       },
-      // 0 - idle
-      // 1 left
-      // 2 right
-      // 3 jump
-      // 4 dock
       actionIteration: 0,
       actionImagesList: [
         ["idle-1.png", "idle-2.png"],
@@ -140,9 +154,34 @@ export default {
           },
         ],
       ],
+      bullets: {
+        bulletNumber: "bullet1",
+        bullet1: {
+          isShoot: true,
+          delay: Math.floor(Math.random() * 10),
+          x: 0,
+          y: 0,
+          height: 59,
+          width: 121,
+        },
+      },
     };
   },
   methods: {
+    bulletShoot() {
+      setInterval(() => {
+        // if (!this.bullets.bullet1.reachedDestination) {
+        //   this.bullets.bullet1.isShoot = !this.bullets.bullet1.isShoot;
+        //   this.bullets.bullet1.reachedDestination = true;
+        // }
+        if (!this.bullets.bullet1.isShoot || this.bullets.bullet1.x < 20) {
+          this.bullets.bullet1.isShoot = !this.bullets.bullet1.isShoot;
+        }
+        // console.log(this.$refs.bullet.getBoundingClientRect().left);
+        // console.log(this.bullets.bullet1.x);
+        // console.log(this.$refs.bullet);
+      }, 200);
+    },
     idleAction() {
       this.currentAction = this.actionList.idle;
       this.actionIteration = 0;
@@ -155,7 +194,7 @@ export default {
       this.speed = 200;
     },
     action: function () {
-      this.intervalid1 = setTimeout(() => {
+      setTimeout(() => {
         let act =
           this.actionImagesList[this.currentAction][this.actionIteration];
 
@@ -198,6 +237,10 @@ export default {
 
         // JUMP
         else if (this.currentAction === this.actionList.jump) {
+          if (this.actionIteration === 3)
+            this.speed = this.speedList.speedJump2;
+          if (this.actionIteration === 6)
+            this.speed = this.speedList.speedJump3;
           if (
             this.actionIteration <
             this.actionImagesList[this.currentAction].length - 1
@@ -222,6 +265,27 @@ export default {
           } else {
             this.idleAction();
           }
+        }
+
+        let character = {
+          width: this.$refs.character.clientWidth,
+          height: this.$refs.character.clientHeight,
+          x: this.$refs.character.getBoundingClientRect().left,
+          y: this.$refs.character.getBoundingClientRect().top,
+        };
+
+        this.bullets.bullet1.x = this.$refs.bullet.getBoundingClientRect().left;
+        this.bullets.bullet1.y = this.$refs.bullet.getBoundingClientRect().top;
+
+        let bullet = this.bullets.bullet1;
+        if (
+          character.x < bullet.x + bullet.width &&
+          character.x + character.width > bullet.x &&
+          character.y < bullet.y + bullet.height &&
+          character.y + character.height > bullet.y
+        ) {
+          // this.bullets.bullet1.isShoot = !this.bullets.bullet1.isShoot;
+          console.log("game over");
         }
 
         this.action();
@@ -271,9 +335,16 @@ export default {
           break;
       }
     },
+    mousemove(event) {
+      var x = event.pageX;
+      var y = event.pageY;
+      this.mousePositionX = window.innerWidth - x;
+      this.mousePositionY = y;
+    },
   },
   created() {
     this.action();
+    this.bulletShoot();
   },
 };
 </script>
