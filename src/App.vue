@@ -1,11 +1,5 @@
 <template>
-  <div
-    id="app"
-    tabindex="0"
-    v-on:keydown="keyDown"
-    @keyup="keyUp"
-    @mousemove="mousemove"
-  >
+  <div id="app" tabindex="0" v-on:keydown="keyDown" @keyup="keyUp">
     <div id="patuti">
       <div id="space">
         <div
@@ -19,26 +13,25 @@
           }"
           :class="{ 'animate-jump': jumped }"
         ></div>
-        <!-- :class="{ 'animate-jump': jumped, dock: docked }" -->
         <div id="area"></div>
       </div>
 
       <ul class="bullet-right-list">
-        <li class="bullet-y">
+        <li class="bullet-x">
           <div
             ref="bullet3"
             class="bullet"
             :class="{ active: bullets.bullet3.isShoot }"
           ></div>
         </li>
-        <li class="bullet-y">
+        <li class="bullet-x">
           <div
             ref="bullet2"
             class="bullet"
             :class="{ active: bullets.bullet2.isShoot }"
           ></div>
         </li>
-        <li class="bullet-y">
+        <li class="bullet-x">
           <div
             ref="bullet1"
             class="bullet"
@@ -46,20 +39,81 @@
           ></div>
         </li>
       </ul>
-      <!-- <div class="bullet-y"></div> -->
-      <!-- <div class="bullet-x"></div> -->
+
+      <ul class="bullet-top-list">
+        <li class="bullet-y">
+          <div
+            ref="bullet6"
+            class="bullet"
+            :class="{ active: bullets.bullet6.isShoot }"
+          ></div>
+        </li>
+        <li class="bullet-y">
+          <div
+            ref="bullet5"
+            class="bullet"
+            :class="{ active: bullets.bullet5.isShoot }"
+          ></div>
+        </li>
+        <li class="bullet-y">
+          <div
+            ref="bullet4"
+            class="bullet"
+            :class="{ active: bullets.bullet4.isShoot }"
+          ></div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="page-bg"></div>
+
+    <Modal v-if="showModal" @close="showModal = false">
+      <div slot="header">
+        <h3>You Dead!</h3>
+      </div>
+      <div slot="body">
+        <h3>You have died!</h3>
+      </div>
+      <div slot="footer">
+        <button @click="showModal = false">Restart</button>
+      </div>
+    </Modal>
+
+    <button v-if="!play" class="play" @click="playGame()">Play</button>
+
+    <div class="life-wrapper">
+      <table class="life-bar-wrapper">
+        <td class="life-bar"></td>
+        <td class="life-bar"></td>
+        <td class="life-bar"></td>
+        <td class="life-bar"></td>
+        <td class="life-bar"></td>
+        <td class="life-bar"></td>
+        <td class="life-bar"></td>
+        <td class="life-bar"></td>
+        <td class="life-bar"></td>
+        <td class="life-bar"></td>
+      </table>
+      <div class="life" :style="{ width: life * 10 + '%' }"></div>
     </div>
   </div>
 </template>
 
 <script>
 import "@/styles/game.scss";
+import Modal from "@/components/Modal.vue";
+
 export default {
   name: "App",
+  components: {
+    Modal,
+  },
   data() {
     return {
-      mousePositionX: 0,
-      mousePositionY: 0,
+      play: false,
+      showModal: false,
+      life: 10,
+      window: {},
       defaultHeight: 161.5,
       defaultWidth: 150,
       height: 161.5,
@@ -68,14 +122,14 @@ export default {
       characterLocation: 0,
       jumped: false,
       docked: false,
-      speed: 200,
+      speed: 50,
       speedList: {
-        speedWalk: 30,
-        speedIdle: 200,
+        speedWalk: 10,
+        speedIdle: 50,
         speedJump: 50,
         speedJump2: 400,
-        speedJump3: 600,
-        speedDock: 50,
+        speedJump3: 50,
+        speedDock: 30,
       },
       walkPixels: 10,
       currentAction: 0,
@@ -164,13 +218,13 @@ export default {
       ],
       bullets: {
         bullet1: {
-          isShoot: true,
+          isShoot: false,
           delay: Math.floor(Math.random() * 20),
           x: 0,
           y: 0,
           height: 29.5,
           width: 60.75,
-          finished: false,
+          finished: true,
         },
         bullet2: {
           isShoot: false,
@@ -179,7 +233,6 @@ export default {
           y: 0,
           height: 29.5,
           width: 60.75,
-          finished: true,
         },
         bullet3: {
           isShoot: false,
@@ -188,12 +241,56 @@ export default {
           y: 0,
           height: 29.5,
           width: 60.75,
-          finished: true,
+        },
+        bullet4: {
+          isShoot: false,
+          delay: Math.floor(Math.random() * 20),
+          x: 0,
+          y: 0,
+          height: 60.75,
+          width: 29.5,
+        },
+        bullet5: {
+          isShoot: false,
+          delay: Math.floor(Math.random() * 20),
+          x: 0,
+          y: 0,
+          height: 60.75,
+          width: 29.5,
+        },
+        bullet6: {
+          isShoot: false,
+          delay: Math.floor(Math.random() * 20),
+          x: 0,
+          y: 0,
+          height: 60.75,
+          width: 29.5,
         },
       },
     };
   },
   methods: {
+    playGame() {
+      this.life = 10;
+      this.showModal = false;
+      this.play = true;
+      this.bullet1Shoot();
+      this.bullet2Shoot();
+      this.bullet3Shoot();
+      this.bullet4Shoot();
+      this.bullet5Shoot();
+      this.bullet6Shoot();
+    },
+    gameOver() {
+      this.showModal = true;
+      this.play = false;
+    },
+    lifeUpdate() {
+      this.life = this.life - 1;
+      if (this.life === 0) {
+        this.gameOver();
+      }
+    },
     timeOut200() {
       setInterval(() => {
         if (this.bullets.bullet1.x < 20) {
@@ -205,6 +302,15 @@ export default {
         if (this.bullets.bullet3.x < 20) {
           this.bullets.bullet3.isShoot = false;
         }
+        if (this.bullets.bullet4.y > this.window.height - 100) {
+          this.bullets.bullet4.isShoot = false;
+        }
+        if (this.bullets.bullet5.y > this.window.height - 100) {
+          this.bullets.bullet5.isShoot = false;
+        }
+        if (this.bullets.bullet6.y > this.window.height - 100) {
+          this.bullets.bullet6.isShoot = false;
+        }
       }, 200);
     },
     getRandomNumber() {
@@ -213,6 +319,7 @@ export default {
 
     bullet1Shoot() {
       setTimeout(() => {
+        if (!this.play) return;
         if (!this.bullets.bullet1.isShoot) {
           this.bullets.bullet1.isShoot = true;
           this.bullets.bullet1.delay = this.getRandomNumber();
@@ -222,6 +329,7 @@ export default {
     },
     bullet2Shoot() {
       setTimeout(() => {
+        if (!this.play) return;
         if (!this.bullets.bullet2.isShoot) {
           this.bullets.bullet2.isShoot = true;
           this.bullets.bullet2.delay = this.getRandomNumber();
@@ -231,13 +339,43 @@ export default {
     },
     bullet3Shoot() {
       setTimeout(() => {
-        console.log("bullet3 called");
+        if (!this.play) return;
         if (!this.bullets.bullet3.isShoot) {
           this.bullets.bullet3.isShoot = true;
           this.bullets.bullet3.delay = this.getRandomNumber();
         }
         this.bullet3Shoot();
       }, this.bullets.bullet3.delay * 1000);
+    },
+    bullet4Shoot() {
+      setTimeout(() => {
+        if (!this.play) return;
+        if (!this.bullets.bullet4.isShoot) {
+          this.bullets.bullet4.isShoot = true;
+          this.bullets.bullet4.delay = this.getRandomNumber();
+        }
+        this.bullet4Shoot();
+      }, this.bullets.bullet4.delay * 1000);
+    },
+    bullet5Shoot() {
+      setTimeout(() => {
+        if (!this.play) return;
+        if (!this.bullets.bullet5.isShoot) {
+          this.bullets.bullet5.isShoot = true;
+          this.bullets.bullet5.delay = this.getRandomNumber();
+        }
+        this.bullet5Shoot();
+      }, this.bullets.bullet5.delay * 1000);
+    },
+    bullet6Shoot() {
+      setTimeout(() => {
+        if (!this.play) return;
+        if (!this.bullets.bullet6.isShoot) {
+          this.bullets.bullet6.isShoot = true;
+          this.bullets.bullet6.delay = this.getRandomNumber();
+        }
+        this.bullet6Shoot();
+      }, this.bullets.bullet6.delay * 1000);
     },
 
     idleAction() {
@@ -344,6 +482,18 @@ export default {
           this.$refs.bullet3.getBoundingClientRect().left;
         this.bullets.bullet3.y = this.$refs.bullet3.getBoundingClientRect().top;
 
+        this.bullets.bullet4.x =
+          this.$refs.bullet4.getBoundingClientRect().left;
+        this.bullets.bullet4.y = this.$refs.bullet4.getBoundingClientRect().top;
+
+        this.bullets.bullet5.x =
+          this.$refs.bullet5.getBoundingClientRect().left;
+        this.bullets.bullet5.y = this.$refs.bullet5.getBoundingClientRect().top;
+
+        this.bullets.bullet6.x =
+          this.$refs.bullet6.getBoundingClientRect().left;
+        this.bullets.bullet6.y = this.$refs.bullet6.getBoundingClientRect().top;
+
         let bullet1 = this.bullets.bullet1;
         let bullet1Hit =
           character.x < bullet1.x + bullet1.width &&
@@ -365,18 +515,54 @@ export default {
           character.y < bullet3.y + bullet3.height &&
           character.y + character.height > bullet3.y;
 
+        let bullet4 = this.bullets.bullet4;
+        let bullet4Hit =
+          character.x < bullet4.x + bullet4.width &&
+          character.x + character.width > bullet4.x &&
+          character.y < bullet4.y + bullet4.height &&
+          character.y + character.height > bullet4.y;
+
+        let bullet5 = this.bullets.bullet5;
+        let bullet5Hit =
+          character.x < bullet5.x + bullet5.width &&
+          character.x + character.width > bullet5.x &&
+          character.y < bullet5.y + bullet5.height &&
+          character.y + character.height > bullet5.y;
+
+        let bullet6 = this.bullets.bullet6;
+        let bullet6Hit =
+          character.x < bullet6.x + bullet6.width &&
+          character.x + character.width > bullet6.x &&
+          character.y < bullet6.y + bullet6.height &&
+          character.y + character.height > bullet6.y;
+
         if (bullet1Hit) {
-          this.bullets.bullet1.isShoot = !this.bullets.bullet1.isShoot;
-          console.log("bullet1 game over");
+          this.bullets.bullet1.isShoot = false;
+          this.lifeUpdate();
         }
         if (bullet2Hit) {
-          this.bullets.bullet2.isShoot = !this.bullets.bullet2.isShoot;
-          console.log("bullet2 game over");
+          this.bullets.bullet2.isShoot = false;
+          this.lifeUpdate();
         }
 
         if (bullet3Hit) {
-          this.bullets.bullet3.isShoot = !this.bullets.bullet3.isShoot;
-          console.log("bullet3 game over");
+          this.bullets.bullet3.isShoot = false;
+          this.lifeUpdate();
+        }
+
+        if (bullet4Hit) {
+          this.bullets.bullet4.isShoot = false;
+          this.lifeUpdate();
+        }
+
+        if (bullet5Hit) {
+          this.bullets.bullet5.isShoot = false;
+          this.lifeUpdate();
+        }
+
+        if (bullet6Hit) {
+          this.bullets.bullet6.isShoot = false;
+          this.lifeUpdate();
         }
 
         this.action();
@@ -390,7 +576,6 @@ export default {
           if (this.characterLocation <= -40 || this.currentAction != 0) break;
           this.currentAction = 1;
           this.speed = this.speedList.speedWalk;
-          // this.characterLocation -= 5;
           break;
 
         case "d":
@@ -398,7 +583,6 @@ export default {
           if (this.characterLocation >= 174 || this.currentAction != 0) break;
           this.speed = this.speedList.speedWalk;
           this.currentAction = 2;
-          // this.characterLocation += 5;
           break;
 
         case "w":
@@ -426,19 +610,15 @@ export default {
           break;
       }
     },
-    mousemove(event) {
-      var x = event.pageX;
-      var y = event.pageY;
-      this.mousePositionX = window.innerWidth - x;
-      this.mousePositionY = y;
-    },
   },
   created() {
     this.action();
-    this.bullet1Shoot();
-    this.bullet2Shoot();
-    this.bullet3Shoot();
     this.timeOut200();
+    this.characterLocation = this.getRandomNumber() * 10;
+    this.window = {
+      height: window.innerHeight,
+      width: window.innerWidth,
+    };
   },
 };
 </script>
