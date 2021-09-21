@@ -72,7 +72,7 @@
         <h3>You Dead!</h3>
       </div>
       <div slot="body">
-        <h3>You have died!</h3>
+        <h3>You have survived for {{ msToTime() }}</h3>
       </div>
       <div slot="footer">
         <button @click="showModal = false">Restart</button>
@@ -267,9 +267,31 @@ export default {
           width: 29.5,
         },
       },
+      time: {
+        timeStart: 0,
+        timeEnd: 0,
+      },
     };
   },
   methods: {
+    msToTime() {
+      let duration = this.time.timeEnd - this.time.timeStart;
+      // milliseconds = parseInt((duration % 1000) / 100)
+      var seconds = Math.floor((duration / 1000) % 60),
+        minutes = Math.floor((duration / (1000 * 60)) % 60),
+        hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+      hours = hours < 10 ? "0" + hours : hours;
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
+
+      return hours + ":" + minutes + ":" + seconds;
+    },
+    getTime() {
+      let date = new Date();
+      let time = date.getTime();
+      return time;
+    },
     playGame() {
       this.life = 10;
       this.showModal = false;
@@ -280,8 +302,10 @@ export default {
       this.bullet4Shoot();
       this.bullet5Shoot();
       this.bullet6Shoot();
+      this.time.timeStart = this.getTime();
     },
     gameOver() {
+      this.time.timeEnd = this.getTime();
       this.showModal = true;
       this.play = false;
     },
