@@ -15,3 +15,18 @@ Hold Key Down or S to dock
 Key Right or D to move right
 
 Key Up or W to Jump
+
+&nbsp;
+
+## Get Started with Patuti
+`
+npm install
+`
+
+`
+yarn install
+`
+
+`
+npm run serve
+`
