@@ -73,6 +73,33 @@
       @clicked="showModal = false"
     />
 
+    <Modal v-if="tutoriaModal" @close="tutoriaModal = false">
+      <div slot="header">
+        <h3>Tutorial</h3>
+      </div>
+      <div slot="body">
+        <div style="margin: 10px">
+          <strong>Key Left</strong> or <strong>A</strong> -
+          <strong>Left Movement</strong>
+        </div>
+        <div style="margin: 10px">
+          <strong>Key Down</strong> or <strong>S</strong> -
+          <strong>Dock</strong>
+        </div>
+        <div style="margin: 10px">
+          <strong>Key Right</strong> or <strong>D</strong> -
+          <strong>Right Movement</strong>
+        </div>
+        <div style="margin: 10px">
+          <strong>Key Up</strong> or <strong>W</strong> -
+          <strong>Jump</strong>
+        </div>
+      </div>
+      <div slot="footer">
+        <button @click="tutoriaModal = false">Close</button>
+      </div>
+    </Modal>
+
     <!-- <Modal v-if="showModal" @close="showModal = false">
       <div slot="header">
         <h3>You Dead!</h3>
@@ -84,6 +111,10 @@
         <button @click="showModal = false">Restart</button>
       </div>
     </Modal> -->
+
+    <button v-if="!play" class="tutorial" @click="tutoriaModal = true">
+      How to Play
+    </button>
 
     <button v-if="!play" class="play" @click="playGame()">Play</button>
 
@@ -108,17 +139,19 @@
 <script>
 import "@/styles/game.scss";
 import GameOver from "@/components/GameOver.vue";
-// import Modal from "@/components/Modal.vue";
+import Modal from "@/components/Modal.vue";
 
 export default {
   name: "App",
   components: {
     GameOver,
+    Modal,
   },
   data() {
     return {
       play: false,
       showModal: false,
+      tutoriaModal: false,
       life: 10,
       window: {},
       defaultHeight: 161.5,
