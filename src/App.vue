@@ -67,7 +67,13 @@
 
     <div class="page-bg"></div>
 
-    <Modal v-if="showModal" @close="showModal = false">
+    <GameOver
+      v-if="showModal"
+      :time="msToTime()"
+      @clicked="showModal = false"
+    />
+
+    <!-- <Modal v-if="showModal" @close="showModal = false">
       <div slot="header">
         <h3>You Dead!</h3>
       </div>
@@ -77,7 +83,7 @@
       <div slot="footer">
         <button @click="showModal = false">Restart</button>
       </div>
-    </Modal>
+    </Modal> -->
 
     <button v-if="!play" class="play" @click="playGame()">Play</button>
 
@@ -101,12 +107,13 @@
 
 <script>
 import "@/styles/game.scss";
-import Modal from "@/components/Modal.vue";
+import GameOver from "@/components/GameOver.vue";
+// import Modal from "@/components/Modal.vue";
 
 export default {
   name: "App",
   components: {
-    Modal,
+    GameOver,
   },
   data() {
     return {
@@ -122,10 +129,10 @@ export default {
       characterLocation: 0,
       jumped: false,
       docked: false,
-      speed: 50,
+      speed: 100,
       speedList: {
         speedWalk: 10,
-        speedIdle: 50,
+        speedIdle: 100,
         speedJump: 50,
         speedJump2: 400,
         speedJump3: 50,
@@ -308,6 +315,7 @@ export default {
       this.time.timeEnd = this.getTime();
       this.showModal = true;
       this.play = false;
+      this.life = 10;
     },
     lifeUpdate() {
       this.life = this.life - 1;
@@ -409,9 +417,9 @@ export default {
       setTimeout(() => {
         this.height = this.defaultHeight;
         this.width = this.defaultWidth;
-      }, 200);
+      }, this.speedList.speedIdle);
       this.jumped = false;
-      this.speed = 200;
+      this.speed = this.speedList.speedIdle;
     },
     action: function () {
       setTimeout(() => {

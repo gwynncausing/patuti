@@ -67,8 +67,8 @@
 
       &.active {
         animation-name: shoot-x;
-        animation-duration: 8s;
-        animation-timing-function: ease;
+        animation-duration: 6s;
+        animation-timing-function: linear;
       }
     }
   }
